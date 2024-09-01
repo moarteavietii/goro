@@ -13,4 +13,6 @@ Sentry.init({
     dsn: sentryDsn,
     // Tracing
     tracesSampleRate: 1.0, // Capture 100% of the transactions
+    // Set `tracePropagationTargets` to control for which URLs trace propagation should be enabled
+    tracePropagationTargets: ["localhost", /^https:\/\/moarteavietii\.go\.ro/],
 });
