@@ -9,7 +9,7 @@ require('dotenv').config();
 const { SSL_CERTIFICATE_FILE, SSL_PRIVATE_KEY_FILE, DEPLOY_KEY, SERVER_PORT } = process.env;
 const exec = util.promisify(require('child_process').exec);
 
-const port = parseInt(SERVER_PORT || '9615');
+const port = parseInt(SERVER_PORT || '9615', 10);
 const app = express()
 app.use(express.json());
 
