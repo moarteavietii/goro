@@ -38,16 +38,21 @@ app.post('/deploy', async (req, res) => {
   }
 
   console.log('deploying');
-  exec('git pull').then((resolve, reject) => {
-    // TODO: add bun install after pull
-    if (reject) {
-      console.error(reject);
-      res.status(500);
-      res.send('Error');
-    } else {
-        res.send('Success');
+
+  try {
+    await exec('git pull');
+
+    if (req.body.modified.includes('package.json')) {
+      await exec('bun install');
     }
-  });
+
+    console.log('deploy successful');
+    res.send('Success');
+  } catch (e) {
+    console.error(e);
+    res.status(500);
+    res.send('Error');
+  }
 });
 
 //TODO: add http listener and redirect to https
