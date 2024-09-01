@@ -1,13 +1,12 @@
 const fs = require('fs');
-const util = require('util');
 const https = require('https');
 const express = require('express');
 require('dotenv').config();
 
 import { handleWebhook } from './webhook';
+import { deploy } from "./deploy";
 
 const { SSL_CERTIFICATE_FILE, SSL_PRIVATE_KEY_FILE, SERVER_PORT } = process.env;
-const exec = util.promisify(require('child_process').exec);
 
 const port = parseInt(SERVER_PORT || '9615', 10);
 const app = express()
@@ -38,13 +37,7 @@ app.post('/deploy', async (req, res) => {
   console.log('deploying');
 
   try {
-    await exec('git pull');
-
-    if (req.body?.head_commit?.modified?.includes('package.json')) {
-      await exec('bun install');
-    }
-
-    console.log('deploy successful');
+    await deploy(req.body?.head_commit?.modified?.includes('package.json'));
     res.send('Success');
   } catch (e) {
     console.error(e);
