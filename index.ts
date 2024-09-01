@@ -1,13 +1,15 @@
 const fs = require('fs');
-const util = require('util');
+// const util = require('util');
 const https = require('https');
 const express = require('express');
 require('dotenv').config();
 
+import { handleWebhook } from './webhook';
+
 // TODO: remove
 
-const { SSL_CERTIFICATE_FILE, SSL_PRIVATE_KEY_FILE, DEPLOY_KEY, SERVER_PORT } = process.env;
-const exec = util.promisify(require('child_process').exec);
+const { SSL_CERTIFICATE_FILE, SSL_PRIVATE_KEY_FILE, SERVER_PORT } = process.env;
+// const exec = util.promisify(require('child_process').exec);
 
 const port = parseInt(SERVER_PORT || '9615', 10);
 const app = express()
@@ -23,23 +25,30 @@ app.get('/', (req, res) => {
   res.send('Hello there')
 })
 
-app.post('/deploy', (req, res) => {
-  if (req.body?.key !== DEPLOY_KEY) {
+app.post('/deploy', async (req, res) => {
+  // TODO: maybe make this a middleware
+  const content = JSON.stringify(req.body);
+  const signature = req.headers["x-hub-signature-256"];
+  const verified = await handleWebhook(signature, content);
+
+  if (!verified) {
     res.status(401);
     res.send('Unauthorized');
     return;
   }
 
-  exec('git pull').then((resolve, reject) => {
-    // TODO: add bun install after pull
-    if (reject) {
-      console.error(reject);
-      res.status(500);
-      res.send('Error');
-    } else {
-        res.send('Success');
-    }
-  });
+  console.log('deploying');
+
+  // exec('git pull').then((resolve, reject) => {
+  //   // TODO: add bun install after pull
+  //   if (reject) {
+  //     console.error(reject);
+  //     res.status(500);
+  //     res.send('Error');
+  //   } else {
+  //       res.send('Success');
+  //   }
+  // });
 });
 
 //TODO: add http listener and redirect to https
