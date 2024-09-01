@@ -1,17 +1,36 @@
+const fs = require('fs');
 const util = require('util');
+const https = require('https');
+const express = require('express');
+require('dotenv').config();
+
+const { SSL_CERTIFICATE_FILE, SSL_PRIVATE_KEY_FILE, DEPLOY_KEY, SERVER_PORT } = process.env;
 const exec = util.promisify(require('child_process').exec);
 
-const express = require('express');
+const port = parseInt(SERVER_PORT || '9615');
 const app = express()
-const port = 9615
+app.use(express.json());
+
+const certificate  = fs.readFileSync(SSL_CERTIFICATE_FILE, 'utf8');
+const privateKey = fs.readFileSync(SSL_PRIVATE_KEY_FILE, 'utf8');
+const credentials = {key: privateKey, cert: certificate};
+
+const httpsServer = https.createServer(credentials, app);
 
 app.get('/', (req, res) => {
   res.send('Hello there')
 })
 
 app.post('/deploy', (req, res) => {
-  exec('git pull origin master').then((resolve, reject) => {
-    if(reject) {
+  console.log(req.body);
+  if (req.body?.key !== DEPLOY_KEY) {
+    res.status(401);
+    res.send('Unauthorized');
+    return;
+  }
+
+  exec('git pull').then((resolve, reject) => {
+    if (reject) {
       console.error(reject);
       res.status(500);
       res.send('Error');
@@ -21,6 +40,7 @@ app.post('/deploy', (req, res) => {
   });
 });
 
-app.listen(port, () => {
+//TODO: add http listener and redirect to https
+httpsServer.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
