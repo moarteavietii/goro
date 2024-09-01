@@ -33,9 +33,9 @@ app.get('/', (req, res) => {
 
 app.post('/deploy', async (req, res) => {
   // TODO: maybe make this a middleware
-  const content = JSON.stringify(req.body);
   const signature = req.headers["x-hub-signature-256"];
-  const verified = await handleWebhook(signature, content);
+  const content = JSON.stringify(req.body);
+  const verified = await handleWebhook(content, signature);
 
   if (!verified) {
     res.status(401);
