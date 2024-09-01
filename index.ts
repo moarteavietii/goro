@@ -1,12 +1,21 @@
-const fs = require('fs');
-const https = require('https');
-const express = require('express');
-require('dotenv').config();
+import './sentry';
+import fs from 'fs';
+import https from 'https';
+import dotenv from 'dotenv'
+import express from 'express';
+
+dotenv.config();
 
 import { handleWebhook } from './webhook';
 import { deploy } from "./deploy";
 
 const { SSL_CERTIFICATE_FILE, SSL_PRIVATE_KEY_FILE, SERVER_PORT } = process.env;
+
+// TODO: move this in a config file!
+if (!SSL_CERTIFICATE_FILE || !SSL_PRIVATE_KEY_FILE) {
+  console.error('Missing SSL_CERTIFICATE_FILE or SSL_PRIVATE_KEY_FILE in env');
+  process.exit(1);
+}
 
 const port = parseInt(SERVER_PORT || '9615', 10);
 const app = express()
