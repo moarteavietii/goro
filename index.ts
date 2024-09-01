@@ -24,7 +24,6 @@ app.get('/', (req, res) => {
 })
 
 app.post('/deploy', (req, res) => {
-  console.log(req.body);
   if (req.body?.key !== DEPLOY_KEY) {
     res.status(401);
     res.send('Unauthorized');
@@ -32,6 +31,7 @@ app.post('/deploy', (req, res) => {
   }
 
   exec('git pull').then((resolve, reject) => {
+    // TODO: add bun install after pull
     if (reject) {
       console.error(reject);
       res.status(500);

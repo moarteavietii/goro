@@ -176,7 +176,8 @@ dist
 .DS_Store
 
 # selsigned certificates
-selfsigned.*
+selfsigned.crt
+selfsigned.key
 
 # bun lock file
 bun.lockb
