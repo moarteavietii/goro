@@ -1,11 +1,12 @@
 import * as Sentry from "@sentry/bun";
+import logger from "src/logger";
 import dotenv from 'dotenv';
 dotenv.config();
 
 const sentryDsn = process.env.SENTRY_DSN;
 
 if (!sentryDsn) {
-    console.error('Missing SENTRY_DSN in env');
+    logger.error('Missing SENTRY_DSN in env');
     process.exit(1);
 }
 

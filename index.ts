@@ -1,12 +1,13 @@
-import './src/sentry';
-import config from './src/config';
+import 'src/sentry';
+import config from 'src/config';
 
 import fs from 'fs';
 import https from 'https';
 import express from 'express';
 
-import { handleWebhook } from './src/webhook';
-import { deploy } from "./src/deploy";
+import { handleWebhook } from 'src/webhook';
+import { deploy } from "src/deploy";
+import logger from 'src/logger';
 
 const port = parseInt(config.SERVER_PORT, 10);
 const app = express()
@@ -19,6 +20,7 @@ const credentials = {key: privateKey, cert: certificate};
 const httpsServer = https.createServer(credentials, app);
 
 app.get('/', (req, res) => {
+  logger.info('Hello there');
   res.send('Hello there')
 });
 
@@ -34,13 +36,13 @@ app.post('/deploy', async (req, res) => {
     return;
   }
 
-  console.log('deploying');
+  logger.info('deploying');
 
   try {
     await deploy(req.body?.head_commit?.modified?.includes('package.json'));
     res.send('Success');
   } catch (e) {
-    console.error(e);
+    logger.error(e);
     res.status(500);
     res.send('Error');
   }
@@ -48,5 +50,5 @@ app.post('/deploy', async (req, res) => {
 
 //TODO: add http listener and redirect to https
 httpsServer.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+  logger.info(`Example app listening on port ${port}`)
 });
