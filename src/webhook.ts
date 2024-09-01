@@ -1,9 +1,10 @@
 import { Webhooks } from "@octokit/webhooks";
-require('dotenv').config();
+import dotenv from 'dotenv'
 
+dotenv.config();
 const secret = process.env.GITHUB_WEBHOOK_SECRET;
 
-if(!secret) {
+if (!secret) {
     console.error('Missing GITHUB_WEBHOOK_SECRET in env');
     process.exit(1);
 }
