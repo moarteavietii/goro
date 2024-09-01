@@ -4,6 +4,8 @@ const https = require('https');
 const express = require('express');
 require('dotenv').config();
 
+// TODO: remove
+
 const { SSL_CERTIFICATE_FILE, SSL_PRIVATE_KEY_FILE, DEPLOY_KEY, SERVER_PORT } = process.env;
 const exec = util.promisify(require('child_process').exec);
 
