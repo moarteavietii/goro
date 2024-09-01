@@ -6,8 +6,6 @@ require('dotenv').config();
 
 import { handleWebhook } from './webhook';
 
-// TODO: remove
-
 const { SSL_CERTIFICATE_FILE, SSL_PRIVATE_KEY_FILE, SERVER_PORT } = process.env;
 const exec = util.promisify(require('child_process').exec);
 
