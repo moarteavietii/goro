@@ -40,7 +40,7 @@ app.post('/deploy', async (req, res) => {
   try {
     await exec('git pull');
 
-    if (req.body.modified.includes('package.json')) {
+    if (req.body?.head_commit?.modified?.includes('package.json')) {
       await exec('bun install');
     }
 
