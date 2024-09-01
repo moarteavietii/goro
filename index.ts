@@ -1,5 +1,5 @@
 const fs = require('fs');
-// const util = require('util');
+const util = require('util');
 const https = require('https');
 const express = require('express');
 require('dotenv').config();
@@ -9,7 +9,7 @@ import { handleWebhook } from './webhook';
 // TODO: remove
 
 const { SSL_CERTIFICATE_FILE, SSL_PRIVATE_KEY_FILE, SERVER_PORT } = process.env;
-// const exec = util.promisify(require('child_process').exec);
+const exec = util.promisify(require('child_process').exec);
 
 const port = parseInt(SERVER_PORT || '9615', 10);
 const app = express()
@@ -38,17 +38,16 @@ app.post('/deploy', async (req, res) => {
   }
 
   console.log('deploying');
-
-  // exec('git pull').then((resolve, reject) => {
-  //   // TODO: add bun install after pull
-  //   if (reject) {
-  //     console.error(reject);
-  //     res.status(500);
-  //     res.send('Error');
-  //   } else {
-  //       res.send('Success');
-  //   }
-  // });
+  exec('git pull').then((resolve, reject) => {
+    // TODO: add bun install after pull
+    if (reject) {
+      console.error(reject);
+      res.status(500);
+      res.send('Error');
+    } else {
+        res.send('Success');
+    }
+  });
 });
 
 //TODO: add http listener and redirect to https
